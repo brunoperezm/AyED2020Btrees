@@ -1,6 +1,6 @@
-#Algoritmos y estructuras de datos 2019 - Proyecto final
+# Algoritmos y estructuras de datos 2019 - Proyecto final
 
-##Consigna
+## Consigna
 Agarrar el código de: https://www.geeksforgeeks.org/b-trees-implementation-in-c/ y adaptarlo en lo siguiente:
 
 1. armar una clase B-Tree+ ... si bien es codigo C++ usa struct y no clases
