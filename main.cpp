@@ -25,6 +25,15 @@ struct node {
 	struct node* parent; 
 }; 
 
+/**
+ * @details busca la hoja donde se podría insertar el nro k
+ *  si el nodo root es null crea una hoja en el padre en la posición chidex
+ *  y la retorna
+ *  @param root el nodo root a partir del cual buscar
+ *  @param k el nro a insertar
+ *  @param parent el padre del root
+ *  @param chindex la posición en la que se insertaría un nuevo nodo en el parent si el root es nulo
+ *  */
 // This function searches for the leaf 
 // into which to insert element 'k' 
 struct node* searchforleaf(struct node* root, int k, 
@@ -77,7 +86,11 @@ struct node* searchforleaf(struct node* root, int k,
 		return newleaf; 
 	} 
 } 
-
+/**
+ * @brief inserta un numero en el el lugar que corresponda según B*trees
+ * @param root es el nodo a partir del cual se puede insertar
+ * @param k es el numero a insertar
+ * */
 struct node* insert(struct node* root, int k) 
 { 
 	if (root) { 
@@ -86,14 +99,17 @@ struct node* insert(struct node* root, int k)
 		int e = k; 
 		
 		// If the leaf node is empty, simply 
-		// add the element and return 
+		// add the element and return
+		// Este bucle for dice: seguir hasta que p no sea nulo y en cada iteración el nodo p se va al padre.
+		// Notar que p arranca con la hoja del nodo root
 		for (int e = k; p; p = p->parent) { 
-			if (p->n == 0) { 
-				p->key[0] = e; 
+            // si el nodo tiene 0 elementos insertar el numero y retornar
+			if (p->n == 0) {
+				p->key[0] = e;
 				p->n = 1; 
 				return root; 
 			} 
-			// If number of filled keys is less than maximum 
+			// Si el nodo tiene menos numeros que el máximo
 			if (p->n < N - 1) { 
 				int i; 
 				for (i = 0; i < p->n; i++) { 

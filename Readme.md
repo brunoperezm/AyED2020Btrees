@@ -9,3 +9,6 @@ Agarrar el código de: https://www.geeksforgeeks.org/b-trees-implementation-in-c
 
 
 hacer que funcione con grado variable (3,4,5,6)
+
+## Material de referencia
+[Visualización Btree](https://www.cs.usfca.edu/~galles/visualization/BPlusTree.html)
