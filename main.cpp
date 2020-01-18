@@ -26,27 +26,27 @@ public:
 
 class BTreep {
 public:
-    node* searchforleaf( node* root, int k, node* parent, int chindex);
+    node* searchforleaf(node* root, int numeroAInsertar, node* parent, int chindex);
     node* insert( node* root, int k);
 };
 
 /**
- * @details busca la hoja donde se podría insertar el nro k
+ * @details busca la hoja donde se podría insertar el nro numeroAInsertar
  *  si el nodo root es null crea una hoja en el padre en la posición chidex
  *  y la retorna
  *  @param root el nodo root a partir del cual buscar
- *  @param k el nro a insertar
+ *  @param numeroAInsertar el nro a insertar
  *  @param parent el padre del root
  *  @param chindex la posición en la que se insertaría un nuevo nodo en el parent si el root es nulo
  *  */
 // This function searches for the leaf
-// into which to insert element 'k'
-node* BTreep::searchforleaf( node* root, int k,node* parent, int chindex)
+// into which to insert element 'numeroAInsertar'
+node* BTreep::searchforleaf(node* root, int numeroAInsertar, node* parent, int chindex)
 {
     if (root) {
 
         // If the passed root is a leaf node, then
-        // k can be inserted in this node itself
+        // numeroAInsertar can be inserted in this node itself
         if (root->isleaf == 1)
             return root;
 
@@ -58,8 +58,8 @@ node* BTreep::searchforleaf( node* root, int k,node* parent, int chindex)
             /*If passed root's initial key is itself g
                 reater than the element to be inserted,
                 we need to insert to a new leaf left of the root*/
-            if (k < root->key[0])
-                root = searchforleaf(root->child[0], k, root, 0);
+            if (numeroAInsertar < root->key[0])
+                root = searchforleaf(root->child[0], numeroAInsertar, root, 0);
 
             else
             {
@@ -67,13 +67,13 @@ node* BTreep::searchforleaf( node* root, int k,node* parent, int chindex)
                 // than the insertion value
                 // and insert into child of that key
                 for (i = 0; i < root->n; i++)
-                    if (root->key[i] > k)
-                        root = searchforleaf(root->child[i], k, root, i);
+                    if (root->key[i] > numeroAInsertar)
+                        root = searchforleaf(root->child[i], numeroAInsertar, root, i);
 
                 // If all the keys are less than the insertion
                 // key value, insert to the right of last key
-                if (root->key[i - 1] < k)
-                    root = searchforleaf(root->child[i], k, root, i);
+                if (root->key[i - 1] < numeroAInsertar)
+                    root = searchforleaf(root->child[i], numeroAInsertar, root, i);
             }
         }
     }
@@ -96,7 +96,7 @@ node* BTreep::searchforleaf( node* root, int k,node* parent, int chindex)
  * @param root es el nodo a partir del cual se puede insertar
  * @param k es el numero a insertar
  * */
-node*BTreep::insert(node* root, int k)
+node* BTreep::insert(node* root, int k)
 {
     if (root) {
         node* p = searchforleaf(root, k, NULL, 0);
@@ -264,7 +264,6 @@ int main()
     root->child[0] = btree.insert(root->child[0], 2);
     root->child[0] = btree.insert(root->child[0], 4);
     root->child[0]->parent = root;
-    //hola gil
 
 
     // Insert 7, 8, 9 to the right of 6
