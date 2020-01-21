@@ -25,9 +25,14 @@ public:
 };
 
 class BTreep {
+
 public:
     node* searchforleaf(node* root, int numeroAInsertar, node* parent, int chindex);
     node* insert( node* root, int k);
+
+private:
+    node* createNode(node* root, int k);
+
 };
 
 /**
@@ -221,13 +226,18 @@ node* BTreep::insert(node* root, int k)
     }
     else
     {
-        // Create new node if root is NULL
-        node* root = new node;
-        root->key[0] = k;
-        root->isleaf = 1;
-        root->n = 1;
-        root->parent = NULL;
+      createNode(root,k); //crear un nuevo nodo en caso que root no exista
     }
+}
+
+node* BTreep::createNode(node *root, int k) {
+
+    // Create new node if root is NULL
+    root = new node;
+    root->key[0] = k;
+    root->isleaf = 1;
+    root->n = 1;
+    root->parent = NULL;
 }
 
 // Driver code
