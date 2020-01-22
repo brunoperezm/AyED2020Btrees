@@ -17,10 +17,10 @@ public:
     // is a leaf, isleaf=1 else isleaf=0
     int isleaf;
 
-    // Counts the number of filled keys in a node
+        // Numero de claves llenas en un nodo
     int n;
 
-    // Keeps track of the parent node
+        // Keeps track of the parent node
     node* parent;
 };
 
@@ -31,8 +31,9 @@ public:
     node* insert( node* root, int k);
 
 private:
-    node* createNode(node* root, int k);
-
+    void crearNodoRoot(node* root, int k);
+    void NodoSemidisponible(node* root, node* p, int e);
+    void NodoCompletoDisponible(node* p, int e);
 };
 
 /**
@@ -106,29 +107,19 @@ node* BTreep::insert(node* root, int k)
     if (root) {
         node* p = searchforleaf(root, k, NULL, 0);
         node* q = NULL;
-        int e = k;
+        int e = k;//numero a insertar
 
         // Este bucle for dice: seguir hasta que p no sea nulo y en cada iteración el nodo p se va al padre.
         // Notar que p arranca con la hoja del nodo root
         for (int e = k; p; p = p->parent) {
-            // si el nodo tiene 0 elementos insertar el numero y retornar
+            // si el nodo tiene 0 elementos, insertar el numero y retornar
             if (p->n == 0) {
-                p->key[0] = e;
-                p->n = 1;
+                NodoCompletoDisponible(p,e);
                 return root;
             }
             // Si el nodo tiene menos numeros que el máximo
             if (p->n < N - 1) {
-                int i;
-                for (i = 0; i < p->n; i++) {
-                    if (p->key[i] > e) {
-                        for (int j = p->n - 1; j >= i; j--)
-                            p->key[j + 1] = p->key[j];
-                        break;
-                    }
-                }
-                p->key[i] = e;
-                p->n = p->n + 1;
+                NodoSemidisponible(root,p,e);
                 return root;
             }
 
@@ -226,11 +217,11 @@ node* BTreep::insert(node* root, int k)
     }
     else
     {
-      createNode(root,k); //crear un nuevo nodo en caso que root no exista
+        crearNodoRoot(root,k); //crear un nuevo nodo en caso que root no exista
     }
 }
 
-node* BTreep::createNode(node *root, int k) {
+void BTreep::crearNodoRoot(node *root, int k) {
 
     // Create new node if root is NULL
     root = new node;
@@ -238,6 +229,24 @@ node* BTreep::createNode(node *root, int k) {
     root->isleaf = 1;
     root->n = 1;
     root->parent = NULL;
+}
+
+void BTreep::NodoCompletoDisponible(node* p, int e) {
+    p->key[0] = e;
+    p->n = 1;
+}
+
+void BTreep::NodoSemidisponible(node*root,node* p,int e) {
+    int i=0;
+    for (i = 0; i < p->n; i++) {
+        if (p->key[i] > e) {
+            for (int j = p->n - 1; j >= i; j--)
+                p->key[j + 1] = p->key[j];
+            break;
+        }
+    }
+    p->key[i] = e;
+    p->n = p->n + 1;
 }
 
 // Driver code
