@@ -4,8 +4,8 @@ using namespace std;
 
 // This can be changed to any value -
 // it is the order of the B* Tree
-#define N 4
-class node {
+#define N 5
+class node{
 public:
     // key of N-1 nodes
     int key[N - 1];
@@ -34,6 +34,7 @@ private:
     void crearNodoRoot(node* root, int k);
     void NodoSemidisponible(node* root, node* p, int e);
     void NodoCompletoDisponible(node* p, int e);
+    //void HermanoCorrectoConEspacio(node* p, node* q, int m);
 };
 
 /**
@@ -108,15 +109,16 @@ node* BTreep::insert(node* root, int k)
         node* p = searchforleaf(root, k, NULL, 0);
         node* q = NULL;
         int e = k;//numero a insertar
-
         // Este bucle for dice: seguir hasta que p no sea nulo y en cada iteración el nodo p se va al padre.
         // Notar que p arranca con la hoja del nodo root
         for (int e = k; p; p = p->parent) {
+
             // si el nodo tiene 0 elementos, insertar el numero y retornar
             if (p->n == 0) {
                 NodoCompletoDisponible(p,e);
                 return root;
             }
+
             // Si el nodo tiene menos numeros que el máximo
             if (p->n < N - 1) {
                 NodoSemidisponible(root,p,e);
@@ -133,15 +135,15 @@ node* BTreep::insert(node* root, int k)
                         break;
                     }
 
-                // If right sibling is possible
+                // Si es posible el hermano correcto
                 if (m + 1 <= N - 1)
                 {
-                    // q is the right sibling
+                    // q es el hermano correcto
                     q = p->parent->child[m + 1];
 
                     if (q) {
 
-                        // If right sibling is full
+                        // Si el hermano correcto está lleno
                         if (q->n == N - 1) {
                             node* r = new node;
                             int* z = new int[((2 * N) / 3)];
@@ -195,8 +197,9 @@ node* BTreep::insert(node* root, int k)
                             }
                         }
                     }
-                    else // If right sibling is not full
+                    else // Si el hermano correcto no está lleno
                     {
+                        //HermanoCorrectoConEspacio(p,q,m);
                         int put;
                         if (m == 0 || m == 1)
                             put = p->parent->key[0];
@@ -249,12 +252,25 @@ void BTreep::NodoSemidisponible(node*root,node* p,int e) {
     p->n = p->n + 1;
 }
 
+/*void BTreep::HermanoCorrectoConEspacio(node* p, node* q, int m){
+    int put;
+    if (m == 0 || m == 1)
+        put = p->parent->key[0];
+    else
+        put = p->parent->key[m - 1];
+    for (int j = (q->n) - 1; j >= 1; j--)
+        q->key[j + 1] = q->key[j];
+    q->key[0] = put;
+    p->parent->key[m == 0 ? m : m - 1] = p->key[p->n - 1];
+}*/
+
 // Driver code
+
 int main()
 {
     /* Consider the following tree that has been obtained
     from some root split:
-                6
+                 6
                 / \
             1 2 4 7 8 9
 
@@ -275,50 +291,104 @@ int main()
     // Start with an empty root
     BTreep btree = BTreep();
     node* root = NULL;
-    // Insert 6
-    root = btree.insert(root, 6);
+    if(N==4) {
+        // Insert 6
+        root = btree.insert(root, 6);
 
-    // Insert 1, 2, 4 to the left of 6
-    root->child[0] = btree.insert(root->child[0], 1);
-    root->child[0] = btree.insert(root->child[0], 2);
-    root->child[0] = btree.insert(root->child[0], 4);
-    root->child[0]->parent = root;
-
-
-    // Insert 7, 8, 9 to the right of 6
-    root->child[1] = btree.insert(root->child[1], 7);
-    root->child[1] = btree.insert(root->child[1], 8);
-    root->child[1] = btree.insert(root->child[1], 9);
-    root->child[1]->parent = root;
+        // Insert 1, 2, 4 to the left of 6
+        root->child[0] = btree.insert(root->child[0], 1);
+        root->child[0] = btree.insert(root->child[0], 2);
+        root->child[0] = btree.insert(root->child[0], 4);
+        root->child[0]->parent = root;
 
 
-    cout << "Original tree: " << endl;
-    for (int i = 0; i < root->n; i++)
-        cout << root->key[i] << " ";
-    cout << endl;
-    for (int i = 0; i < 2; i++) {
-        cout << root->child[i]->key[0] << " ";
-        cout << root->child[i]->key[1] << " ";
-        cout << root->child[i]->key[2] << " ";
+        // Insert 7, 8, 9 to the right of 6
+        root->child[1] = btree.insert(root->child[1], 7);
+        root->child[1] = btree.insert(root->child[1], 8);
+        root->child[1] = btree.insert(root->child[1], 9);
+        root->child[1]->parent = root;
+
+
+        cout << "Original tree: " << endl;
+        for (int i = 0; i < root->n; i++)
+            cout << root->key[i] << " ";
+        cout << endl;
+        for (int i = 0; i < 2; i++) {
+            cout << root->child[i]->key[0] << " ";
+            cout << root->child[i]->key[1] << " ";
+            cout << root->child[i]->key[2] << " ";
+        }
+        cout << endl;
+
+
+        cout << "After adding 5: " << endl;
+
+        // Inserting element '5':
+
+        root->child[0] = btree.insert(root->child[0], 5);
+        // Printing nodes
+
+        for (int i = 0; i <= root->n; i++)
+            cout << root->key[i] << " ";
+        cout << endl;
+        for (int i = 0; i < N - 1; i++) {
+            cout << root->child[i]->key[0] << " ";
+            cout << root->child[i]->key[1] << " ";
+        }
+
+        return 0;
     }
-    cout << endl;
+   if (N==5){
+       // Insert 6
+       root = btree.insert(root, 8);
+
+       // Insert 1, 2, 4 to the left of 6
+       root->child[0] = btree.insert(root->child[0], 1);
+       root->child[0] = btree.insert(root->child[0], 2);
+       root->child[0] = btree.insert(root->child[0], 3);
+       root->child[0] = btree.insert(root->child[0], 4);
+       root->child[0]->parent = root;
 
 
-    cout << "After adding 5: " << endl;
+       // Insert 7, 8, 9 to the right of 6
+       root->child[1] = btree.insert(root->child[1], 10);
+       root->child[1] = btree.insert(root->child[1], 11);
+       root->child[1] = btree.insert(root->child[1], 12);
+       root->child[1] = btree.insert(root->child[1], 13);
+       root->child[1]->parent = root;
 
-    // Inserting element '5':
 
-    root->child[0] = btree.insert(root->child[0], 5);
+       cout << "Original tree: " << endl;
+       for (int i = 0; i < root->n; i++)
+           cout << root->key[i] << " ";
+       cout << endl;
+       for (int i = 0; i < 2; i++) {
+           cout << root->child[i]->key[0] << " ";
+           cout << root->child[i]->key[1] << " ";
+           cout << root->child[i]->key[2] << " ";
+           cout << root->child[i]->key[3] << " ";
+       }
+       cout << endl;
 
-    // Printing nodes
 
-    for (int i = 0; i <= root->n; i++)
-        cout << root->key[i] << " ";
-    cout << endl;
-    for (int i = 0; i < N - 1; i++) {
-        cout << root->child[i]->key[0] << " ";
-        cout << root->child[i]->key[1] << " ";
-    }
+       cout << "After adding 6: " << endl;
 
-    return 0;
+       // Inserting element '5':
+
+       root->child[0] = btree.insert(root->child[0], 6);
+       // Printing nodes
+
+       for (int i = 0; i <= root->n; i++){
+           cout << root->key[i] << " ";
+       }
+       cout << endl;
+       int i=0;
+       for ( i ; i < N - 1; i++) {
+           cout << root->child[i]->key[0] << " ";
+           cout << root->child[i]->key[1] << " ";
+           cout << root->child[i]->key[2] << " ";
+       }
+
+       return 0;
+   }
 }
