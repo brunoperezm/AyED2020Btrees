@@ -28,12 +28,13 @@ class BTreep {
 
 public:
     node* searchforleaf(node* root, int numeroAInsertar, node* parent, int chindex);
-    node* insert( node* root, int k);
+    node* insert( node* root, int numeroAInsertar);
 
 private:
     void crearNodoRoot(node* root, int k);
-    void NodoSemidisponible(node* root, node* p, int e);
-    void NodoCompletoDisponible(node* p, int e);
+    void insertarEnPrimerLugar(node* p, int e);
+    int obtenerPosiciondeLLaveMayorQueN(node *nodo, int nroAComparar);
+    void insertarLlaveEnPosicion(node *pNode, int numeroAInsertar, int posicion);
 };
 
 /**
@@ -100,35 +101,35 @@ node* BTreep::searchforleaf(node* root, int numeroAInsertar, node* parent, int c
 /**
  * @brief inserta un numero en el el lugar que corresponda según B*trees
  * @param root es el nodo a partir del cual se puede insertar
- * @param k es el numero a insertar
+ * @param numeroAInsertar es el numero a insertar
  * */
-node* BTreep::insert(node* root, int k)
+node* BTreep::insert(node* root, int numeroAInsertar)
 {
-    if (root) {
-        node* p = searchforleaf(root, k, NULL, 0);
-        node* q = NULL;
-        int e = k;//numero a insertar
+    if (root != nullptr) {
+        node* nodeItem = searchforleaf(root, numeroAInsertar, nullptr, 0);
+        node* q = nullptr;
 
-        // Este bucle for dice: seguir hasta que p no sea nulo y en cada iteración el nodo p se va al padre.
-        // Notar que p arranca con la hoja del nodo root
-        for (int e = k; p; p = p->parent) {
+        // Este bucle for dice: seguir hasta que nodeItem no sea nulo y en cada iteración el nodo nodeItem se va al padre.
+        // Notar que nodeItem arranca con la hoja del nodo root
+        for (; nodeItem != nullptr; nodeItem = nodeItem->parent) {
             // si el nodo tiene 0 elementos, insertar el numero y retornar
-            if (p->n == 0) {
-                NodoCompletoDisponible(p,e);
+            if (nodeItem->n == 0) {
+                insertarEnPrimerLugar(nodeItem, numeroAInsertar);
                 return root;
             }
             // Si el nodo tiene menos numeros que el máximo
-            if (p->n < N - 1) {
-                NodoSemidisponible(root,p,e);
+            if (nodeItem->n < N - 1) {
+                int posLlave = obtenerPosiciondeLLaveMayorQueN(nodeItem,numeroAInsertar);
+                insertarLlaveEnPosicion(nodeItem,numeroAInsertar,posLlave);
                 return root;
             }
 
             //Si el número de claves llenas es igual al máximo
             // y no es root y hay espacio en el padre
-            if (p->n == N - 1 && p->parent && p->parent->n < N) {
+            if (nodeItem->n == N - 1 && nodeItem->parent && nodeItem->parent->n < N) {
                 int m;
-                for (int i = 0; i < p->parent->n; i++)
-                    if (p->parent->child[i] == p) {
+                for (int i = 0; i < nodeItem->parent->n; i++)
+                    if (nodeItem->parent->child[i] == nodeItem) {
                         m = i;
                         break;
                     }
@@ -137,7 +138,7 @@ node* BTreep::insert(node* root, int k)
                 if (m + 1 <= N - 1)
                 {
                     // q is the right sibling
-                    q = p->parent->child[m + 1];
+                    q = nodeItem->parent->child[m + 1];
 
                     if (q) {
 
@@ -148,11 +149,11 @@ node* BTreep::insert(node* root, int k)
                             int parent1, parent2;
                             int* marray = new int[2 * N];
                             int i;
-                            for (i = 0; i < p->n; i++)
-                                marray[i] = p->key[i];
+                            for (i = 0; i < nodeItem->n; i++)
+                                marray[i] = nodeItem->key[i];
                             int fege = i;
-                            marray[i] = e;
-                            marray[i + 1] = p->parent->key[m];
+                            marray[i] = numeroAInsertar;
+                            marray[i + 1] = nodeItem->parent->key[m];
                             for (int j = i + 2; j < ((i + 2) + (q->n)); j++)
                                 marray[j] = q->key[j - (i + 2)];
 
@@ -160,9 +161,9 @@ node* BTreep::insert(node* root, int k)
                             // a more rigorous implementation will
                             // sort these elements
 
-                            // Put first (2*N-2)/3 elements into keys of p
+                            // Put first (2*N-2)/3 elements into keys of nodeItem
                             for (int i = 0; i < (2 * N - 2) / 3; i++)
-                                p->key[i] = marray[i];
+                                nodeItem->key[i] = marray[i];
                             parent1 = marray[(2 * N - 2) / 3];
 
                             // Put next (2*N-1)/3 elements into keys of q
@@ -177,20 +178,20 @@ node* BTreep::insert(node* root, int k)
                             // Because m=0 and m=1 are children of the same key,
                             // a special case is made for them
                             if (m == 0 || m == 1) {
-                                p->parent->key[0] = parent1;
-                                p->parent->key[1] = parent2;
-                                p->parent->child[0] = p;
-                                p->parent->child[1] = q;
-                                p->parent->child[2] = r;
+                                nodeItem->parent->key[0] = parent1;
+                                nodeItem->parent->key[1] = parent2;
+                                nodeItem->parent->child[0] = nodeItem;
+                                nodeItem->parent->child[1] = q;
+                                nodeItem->parent->child[2] = r;
                                 return root;
                             }
 
                             else {
-                                p->parent->key[m - 1] = parent1;
-                                p->parent->key[m] = parent2;
-                                p->parent->child[m - 1] = p;
-                                p->parent->child[m] = q;
-                                p->parent->child[m + 1] = r;
+                                nodeItem->parent->key[m - 1] = parent1;
+                                nodeItem->parent->key[m] = parent2;
+                                nodeItem->parent->child[m - 1] = nodeItem;
+                                nodeItem->parent->child[m] = q;
+                                nodeItem->parent->child[m + 1] = r;
                                 return root;
                             }
                         }
@@ -199,13 +200,13 @@ node* BTreep::insert(node* root, int k)
                     {
                         int put;
                         if (m == 0 || m == 1)
-                            put = p->parent->key[0];
+                            put = nodeItem->parent->key[0];
                         else
-                            put = p->parent->key[m - 1];
+                            put = nodeItem->parent->key[m - 1];
                         for (int j = (q->n) - 1; j >= 1; j--)
                             q->key[j + 1] = q->key[j];
                         q->key[0] = put;
-                        p->parent->key[m == 0 ? m : m - 1] = p->key[p->n - 1];
+                        nodeItem->parent->key[m == 0 ? m : m - 1] = nodeItem->key[nodeItem->n - 1];
                     }
                 }
             }
@@ -217,7 +218,7 @@ node* BTreep::insert(node* root, int k)
     }
     else
     {
-        crearNodoRoot(root,k); //crear un nuevo nodo en caso que root no exista
+        crearNodoRoot(root, numeroAInsertar); //crear un nuevo nodo en caso que root no exista
     }
 }
 
@@ -231,22 +232,41 @@ void BTreep::crearNodoRoot(node *root, int k) {
     root->parent = NULL;
 }
 
-void BTreep::NodoCompletoDisponible(node* p, int e) {
+void BTreep::insertarEnPrimerLugar(node* p, int e) {
     p->key[0] = e;
     p->n = 1;
 }
 
-void BTreep::NodoSemidisponible(node*root,node* p,int e) {
-    int i=0;
-    for (i = 0; i < p->n; i++) {
-        if (p->key[i] > e) {
-            for (int j = p->n - 1; j >= i; j--)
-                p->key[j + 1] = p->key[j];
-            break;
-        }
+
+/**
+ * Dado un nodo [1 3 5 7]
+ * y un nroAComparar 4 la funcion devolverá la posición en la que la llave sea menor que 4
+ * En este caso sería donde está ^ [1 3 ^5 7] osea la posición 2
+ * @param nodo el nodo donde se buscarán y comparán las llaves
+ * @param nroAComparar el numero contra el que las llaves se van a comparar
+ * @return devuelve la posición de la llave que sea mayor a nroAComparar. Devuelve -1 si no se encuentra
+ * */
+int BTreep::obtenerPosiciondeLLaveMayorQueN(node* nodo, int nroAComparar) {
+    for (int i = 0; i < nodo->n; i++) {
+        if (nodo->key[i] > nroAComparar) return i;
     }
-    p->key[i] = e;
-    p->n = p->n + 1;
+    return -1;
+}
+
+/**
+ * Dado un nodo [1 3 5 7 _] (El 5to elemento esta vacio) , un nuemero a insertar =4 y una posición 2
+ * convertirar el nodo en [1 3 4 5 7]
+ * Notesé que corre los elemtos a la derecha de posicion un lugar
+ * @param pNode el nodo donde se insertará
+ * @param numeroAInsertar el numero a insertar
+ * @param posicion la posicion de la llave del nodo donde se quiere insertar, comenzando de 0
+ * */
+void BTreep::insertarLlaveEnPosicion(node *pNode, int numeroAInsertar, int posicion) {
+    for (int j = pNode->n - 1; j >= posicion; j--) {
+        pNode->key[j + 1] = pNode->key[j];
+    }
+    pNode->key[posicion] = numeroAInsertar;
+    pNode->n = pNode->n +1;
 }
 
 // Driver code
