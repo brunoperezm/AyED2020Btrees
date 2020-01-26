@@ -13,10 +13,10 @@ hacer que funcione con grado variable (3,4,5,6)
 Ejemplos de B+Tree:
 https://www.sanfoundry.com/cpp-program-to-implement-b-tree/
 https://www.tutorialspoint.com/cplusplus-program-to-implement-bplus-tree
+[Código y explicacion de BTree+](http://datastruct2.blogspot.com/2015/08/arboles-b.html)
 
 ## Material de referencia
 [Visualización Btree](https://www.cs.usfca.edu/~galles/visualization/BPlusTree.html)
-(http://datastruct2.blogspot.com/2015/08/arboles-b.html)
 
 
 Otra info util
