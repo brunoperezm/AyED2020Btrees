@@ -16,6 +16,7 @@ https://www.tutorialspoint.com/cplusplus-program-to-implement-bplus-tree
 
 ## Material de referencia
 [Visualización Btree](https://www.cs.usfca.edu/~galles/visualization/BPlusTree.html)
+(http://datastruct2.blogspot.com/2015/08/arboles-b.html)
 
 
 Otra info util
